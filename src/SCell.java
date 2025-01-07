@@ -31,7 +31,7 @@ public class SCell implements Cell {
 public void setData(String s) {
         // Add your code here
         line = s;
-        /////////////////////
+        // ///////////////////
     }
     @Override
     public String getData() {
@@ -66,7 +66,7 @@ public void setData(String s) {
 
     public static boolean isText(String text) {
         if (text == null) {
-            return false; 
+            return false;
         }
         return !isNumber(text.trim()) && !text.trim().startsWith("=");  // Return true if it's text
     }

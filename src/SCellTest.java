@@ -83,5 +83,6 @@ class SCellTest {
         assertEquals(3.0, SCell.computeForm("3 * (2 + 4) / 6"));
         assertEquals(600.0,SCell.computeForm("(2*3)*(10*10)"));
 
+
     }
 }
