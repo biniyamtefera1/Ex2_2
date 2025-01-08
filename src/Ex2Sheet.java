@@ -1,114 +1,272 @@
 //package assignments.ex2;
-import java.io.IOException;
-// Add your documentation below:
+import java.io.*;
 
 public class Ex2Sheet implements Sheet {
-    private Cell[][] table;
-    // Add your code here
+    private Cell[][] cells;
 
-    // ///////////////////
-    public Ex2Sheet(int x, int y) {
-        table = new SCell[x][y];
-        for(int i=0;i<x;i=i+1) {
-            for(int j=0;j<y;j=j+1) {
-                table[i][j] = new SCell(Ex2Utils.EMPTY_CELL);
+    public Ex2Sheet(int w, int h) {
+        cells = new SCell[w][h];
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                cells[i][j] = new SCell(Ex2Utils.EMPTY_CELL);
             }
         }
-        eval();
     }
+
     public Ex2Sheet() {
         this(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);
     }
 
     @Override
-    public String value(int x, int y) {
-        String ans = Ex2Utils.EMPTY_CELL;
-        // Add your code here
-
-        Cell c = get(x,y);
-        if(c!=null) {ans = c.toString();}
-
-        /////////////////////
-        return ans;
-    }
-
-    @Override
-    public Cell get(int x, int y) {
-        return table[x][y];
-    }
-
-    @Override
-    public Cell get(String cords) {
-        Cell ans = null;
-        // Add your code here
-
-        /////////////////////
-        return ans;
+    public boolean isIn(int x, int y) {
+        return x >= 0 && y >= 0 && x < width() && y < height();
     }
 
     @Override
     public int width() {
-        return table.length;
+        return cells.length;
     }
+
     @Override
     public int height() {
-        return table[0].length;
-    }
-    @Override
-    public void set(int x, int y, String s) {
-        Cell c = new SCell(s);
-        table[x][y] = c;
-        // Add your code here
-
-        /////////////////////
-    }
-    @Override
-    public void eval() {
-        int[][] dd = depth();
-        // Add your code here
-
-        // ///////////////////
+        return cells[0].length;
     }
 
     @Override
-    public boolean isIn(int xx, int yy) {
-        boolean ans = xx>=0 && yy>=0;
-        // Add your code here
+    public void set(int x, int y, String value) {
+        if (!isIn(x, y)) return;
+        if (value == null) value = "";
 
-        /////////////////////
-        return ans;
+
+        if (SCell.isNumber(value)) {
+            cells[x][y] = new SCell(value);
+            return;
+        }
+
+
+        if (value.startsWith("=")) {
+
+            if (isProbablyValidFormula(value)) {
+                cells[x][y] = new SCell(value);
+            } else {
+                cells[x][y] = new SCell(Ex2Utils.ERR_FORM);
+            }
+            return;
+        }
+
+
+        cells[x][y] = new SCell(value);
+    }
+
+    private boolean isProbablyValidFormula(String val) {
+        if (val.length() < 2) return false;
+        return true;
     }
 
     @Override
-    public int[][] depth() {
-        int[][] ans = new int[width()][height()];
-        // Add your code here
-
-        // ///////////////////
-        return ans;
+    public Cell get(int x, int y) {
+        if (isIn(x, y)) {
+            return cells[x][y];
+        }
+        return null;
     }
 
     @Override
-    public void load(String fileName) throws IOException {
-        // Add your code here
-
-        /////////////////////
+    public Cell get(String entry) {
+        Index2D idx = parseIndex(entry);
+        if (idx != null && isIn(idx.getX(), idx.getY())) {
+            return cells[idx.getX()][idx.getY()];
+        }
+        return null;
     }
 
     @Override
-    public void save(String fileName) throws IOException {
-        // Add your code here
+    public String value(int x, int y) {
+        boolean[][] visited = new boolean[width()][height()];
+        return evaluateCell(x, y, visited);
+    }
 
-        /////////////////////
+    private String evaluateCell(int x, int y, boolean[][] visited) {
+        if (!isIn(x, y)) return Ex2Utils.EMPTY_CELL;
+        if (visited[x][y]) return Ex2Utils.ERR_CYCLE;
+        visited[x][y] = true;
+
+        Cell c = cells[x][y];
+        if (c == null || c.getData() == null) return Ex2Utils.EMPTY_CELL;
+
+        String data = c.getData();
+
+        if (SCell.isNumber(data)) {
+            return data;
+        }
+        if (data.equals(Ex2Utils.ERR_FORM)) {
+            return Ex2Utils.ERR_FORM;
+        }
+        if (data.startsWith("=")) {
+            return evaluateFormula(data, visited);
+        }
+        return data; // text
+    }
+
+    private String evaluateFormula(String data, boolean[][] visited) {
+        try {
+            String expr = data.substring(1);
+            String result = "";
+            String token = "";
+            for (int i = 0; i < expr.length(); i++) {
+                char ch = expr.charAt(i);
+                if (Character.isLetterOrDigit(ch)) {
+                    token += ch;
+                } else {
+                    if (!token.isEmpty()) {
+                        String sub = resolveToken(token, visited);
+                        if (Ex2Utils.ERR_CYCLE.equals(sub)) return Ex2Utils.ERR_CYCLE;
+                        result += sub;
+                        token = "";
+                    }
+                    result += ch;
+                }
+            }
+            if (!token.isEmpty()) {
+                String sub = resolveToken(token, visited);
+                if (Ex2Utils.ERR_CYCLE.equals(sub)) return Ex2Utils.ERR_CYCLE;
+                result += sub;
+            }
+            double val = SCell.computeForm("=" + result);
+            return String.valueOf(val);
+        } catch (Exception e) {
+            return Ex2Utils.ERR_FORM;
+        }
+    }
+
+    private String resolveToken(String token, boolean[][] visited) {
+        if (isCellReference(token)) {
+            Index2D idx = parseIndex(token);
+            if (idx != null) {
+                String val = evaluateCell(idx.getX(), idx.getY(), visited);
+                if (Ex2Utils.ERR_CYCLE.equals(val)) return Ex2Utils.ERR_CYCLE;
+                if (SCell.isNumber(val)) return val;
+                if (val.equals(Ex2Utils.ERR_FORM)) return "0";
+                return "0";
+            }
+            return "0";
+        }
+        return token;
+    }
+
+    private boolean isCellReference(String token) {
+        if (token == null || token.length() == 0) return false;
+        int i = 0;
+        while (i < token.length() && Character.isLetter(token.charAt(i))) {
+            if (token.charAt(i) < 'A' || token.charAt(i) > 'Z') return false;
+            i++;
+        }
+        if (i == 0 || i == token.length()) return false;
+        while (i < token.length()) {
+            if (!Character.isDigit(token.charAt(i))) return false;
+            i++;
+        }
+        return true;
+    }
+
+    private Index2D parseIndex(String entry) {
+        if (entry == null || entry.isEmpty()) return null;
+        String colPart = "";
+        String rowPart = "";
+        for (int i = 0; i < entry.length(); i++) {
+            char ch = entry.charAt(i);
+            if (Character.isLetter(ch)) colPart += ch;
+            else if (Character.isDigit(ch)) rowPart += ch;
+        }
+        if (colPart.isEmpty() || rowPart.isEmpty()) return null;
+        int x = 0;
+        for (int i = 0; i < colPart.length(); i++) {
+            x = x * 26 + (colPart.charAt(i) - 'A');
+        }
+        try {
+            int y = Integer.parseInt(rowPart);
+            return new CellEntry(x, y);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     @Override
     public String eval(int x, int y) {
-        String ans = null;
-        if(get(x,y)!=null) {ans = get(x,y).toString();}
-        // Add your code here
+        return value(x, y);
+    }
 
-        /////////////////////
-        return ans;
+    @Override
+    public void eval() {
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < height(); j++) {
+                value(i, j);
+            }
+        }
+    }
+
+    @Override
+    public int[][] depth() {
+        int[][] d = new int[width()][height()];
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < height(); j++) {
+                d[i][j] = computeDepth(i, j);
+            }
+        }
+        return d;
+    }
+
+    private int computeDepth(int x, int y) {
+        Cell c = get(x, y);
+        if (c == null) return 0;
+        String data = c.getData();
+        if (data == null) return 0;
+        if (SCell.isNumber(data) || SCell.isText(data)) return 0;
+        if (data.startsWith("=")) return 1;
+        return Ex2Utils.ERR;
+    }
+
+    @Override
+    public void save(String fileName) throws IOException {
+        BufferedWriter w = null;
+        try {
+            w = new BufferedWriter(new FileWriter(fileName));
+            w.write("I2CS ArielU: SpreadSheet (Ex2) assignment\n");
+            for (int i = 0; i < width(); i++) {
+                for (int j = 0; j < height(); j++) {
+                    Cell cell = cells[i][j];
+                    if (cell != null && !Ex2Utils.EMPTY_CELL.equals(cell.getData())) {
+                        w.write(i + "," + j + "," + cell.getData() + "\n");
+                    }
+                }
+            }
+        } finally {
+            if (w != null) w.close();
+        }
+    }
+
+    @Override
+    public void load(String fileName) throws IOException {
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new FileReader(fileName));
+            r.readLine();
+            for (int i = 0; i < width(); i++) {
+                for (int j = 0; j < height(); j++) {
+                    cells[i][j] = new SCell(Ex2Utils.EMPTY_CELL);
+                }
+            }
+            String line;
+            while ((line = r.readLine()) != null) {
+                String[] parts = line.split(",", 3);
+                if (parts.length == 3) {
+                    int xx = Integer.parseInt(parts[0]);
+                    int yy = Integer.parseInt(parts[1]);
+                    set(xx, yy, parts[2]);
+                }
+            }
+        } finally {
+            if (r != null) r.close();
+        }
     }
 }

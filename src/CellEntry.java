@@ -1,16 +1,31 @@
 //package assignments.ex2;
-// Add your documentation below:
 
-public class CellEntry  implements Index2D {
+public class CellEntry implements Index2D {
+    private final int x;
+    private final int y;
 
-    @Override
-    public boolean isValid() {
-        return false;
+    public CellEntry(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     @Override
-    public int getX() {return Ex2Utils.ERR;}
+    public String toString() {
+        return Ex2Utils.ABC[x] + (y + 1);
+    }
 
     @Override
-    public int getY() {return Ex2Utils.ERR;}
+    public boolean isValid() {
+        return x >= 0 && x < Ex2Utils.WIDTH && y >= 0 && y < Ex2Utils.HEIGHT;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
+    }
 }

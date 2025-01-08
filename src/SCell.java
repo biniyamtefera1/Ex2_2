@@ -6,19 +6,15 @@ import java.util.Stack;
 public class SCell implements Cell {
     private String line;
     private int type;
-    // Add your code here
+    private int order;
 
     public SCell(String s) {
-        // Add your code here
         setData(s);
     }
 
     @Override
     public int getOrder() {
-        // Add your code here
-
-        return 0;
-        // ///////////////////
+       return order;
     }
 
     //@Override
@@ -29,10 +25,41 @@ public class SCell implements Cell {
 
     @Override
 public void setData(String s) {
-        // Add your code here
-        line = s;
-        // ///////////////////
+        normalizeToDoubleString(s);
+        this.type = detectType(s);
+
+
     }
+    public void normalizeToDoubleString(String s) {
+        if (isNumber(s)) {
+            try {
+
+                double numericValue = Double.parseDouble(s);
+                this.line = String.valueOf(numericValue);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid number format: " + s);
+            }
+        } else {
+
+            this.line = s;
+        }
+        this.type = detectType(this.line);
+    }
+    private int detectType(String s) {
+
+        if (s == null || s.isEmpty()) {
+            return Ex2Utils.TEXT;
+        }
+        if (isNumber(s)) {
+            return Ex2Utils.NUMBER;
+        } else if (isForm(s)) {
+            return Ex2Utils.FORM;
+        } else if (isText(s)) {
+            return Ex2Utils.TEXT;
+        }
+        return Ex2Utils.ERR_FORM_FORMAT;
+    }
+
     @Override
     public String getData() {
         return line;
@@ -50,7 +77,7 @@ public void setData(String s) {
 
     @Override
     public void setOrder(int t) {
-        // Add your code here
+        this.order = t;
 
     }
     public static boolean isNumber(String text) {
@@ -195,7 +222,7 @@ public void setData(String s) {
                 return a * b;
             case '/':
                 if (b == 0) {
-                    throw new ArithmeticException("חילוק באפס");
+                    throw new ArithmeticException("divide in zero");
                 }
                 return a / b;
         }
