@@ -1,9 +1,8 @@
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Test.*;
 
-class SCellTest {
+class Ex2Test {
 
     @Test
     void getOrder() {
@@ -32,6 +31,48 @@ class SCellTest {
     @Test
     void setOrder() {
     }
+
+
+        @Test
+        public void testDetectTypeWithNull() {
+            SCell cell = new SCell("");
+            assertEquals(Ex2Utils.TEXT, cell.detectType(null));
+        }
+
+        @Test
+        public void testDetectTypeWithEmptyString() {
+            SCell cell = new SCell("");
+            assertEquals(Ex2Utils.TEXT, cell.detectType(""));
+        }
+
+        @Test
+        public void testDetectTypeWithNumber() {
+            SCell cell = new SCell("");
+            assertEquals(Ex2Utils.NUMBER, cell.detectType("123"));
+            assertEquals(Ex2Utils.NUMBER, cell.detectType("123.45"));
+        }
+
+        @Test
+        public void testDetectTypeWithFormula() {
+            SCell cell = new SCell("");
+            assertEquals(Ex2Utils.FORM, cell.detectType("=A1+B1"));
+            assertEquals(Ex2Utils.FORM, cell.detectType("=SUM(A1, B1)"));
+        }
+
+        @Test
+        public void testDetectTypeWithText() {
+            SCell cell = new SCell("");
+            assertEquals(Ex2Utils.TEXT, cell.detectType("Hello"));
+            assertEquals(Ex2Utils.TEXT, cell.detectType("   Some Text "));
+        }
+
+        @Test
+        public void testDetectTypeWithInvalidFormat() {
+            SCell cell = new SCell("");
+            assertEquals(Ex2Utils.ERR_FORM_FORMAT, cell.detectType("=++A1"));
+        }
+
+
 
 
     @Test
@@ -71,6 +112,12 @@ class SCellTest {
 
         assertFalse(SCell.isForm("3+3"));
         assertFalse(SCell.isForm("a0+3"));
+
+        assertFalse(SCell.isForm("A1+B1"));
+        assertFalse(SCell.isForm("=++A1"));
+        assertTrue(SCell.isForm("=A1+"));
+        assertFalse(SCell.isForm("=A1+(B1"));
+        assertFalse(SCell.isForm("=A1-+B1"));
     }
     @Test
     public void testComputeForm() {
@@ -82,7 +129,7 @@ class SCellTest {
         assertEquals(14.0, SCell.computeForm("(3 + 4) * 2"));
         assertEquals(3.0, SCell.computeForm("3 * (2 + 4) / 6"));
         assertEquals(600.0,SCell.computeForm("(2*3)*(10*10)"));
-
-
-    }
 }
+
+}
+

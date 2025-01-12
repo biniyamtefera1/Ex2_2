@@ -42,7 +42,7 @@ public interface Sheet {
      * @param y integer, y-coordinate of the cell.
      * @param c - the string representation of the cell.
      */
-    public void set(int x, int y, String c);
+    public  void set(int x, int y, String c);
 
     /**
      * Return the Cell in the x,y, position (or null if not in).

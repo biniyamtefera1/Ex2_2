@@ -14,7 +14,7 @@ public class SCell implements Cell {
 
     @Override
     public int getOrder() {
-       return order;
+        return order;
     }
 
     //@Override
@@ -24,7 +24,7 @@ public class SCell implements Cell {
     }
 
     @Override
-public void setData(String s) {
+    public void setData(String s) {
         normalizeToDoubleString(s);
         this.type = detectType(s);
 
@@ -45,7 +45,7 @@ public void setData(String s) {
         }
         this.type = detectType(this.line);
     }
-    private int detectType(String s) {
+    public int detectType(String s) {
 
         if (s == null || s.isEmpty()) {
             return Ex2Utils.TEXT;
@@ -61,7 +61,7 @@ public void setData(String s) {
     }
 
     @Override
-    public String getData() {
+    public  String getData() {
         return line;
     }
 

@@ -1,5 +1,7 @@
 //package assignments.ex2;
 
+import java.util.Objects;
+
 public class CellEntry implements Index2D {
     private final int x;
     private final int y;
@@ -28,4 +30,13 @@ public class CellEntry implements Index2D {
     public int getY() {
         return y;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof CellEntry)) return false;
+        CellEntry cellEntry = (CellEntry) o;
+        return x == cellEntry.x && y == cellEntry.y;
+    }
+
+
 }
