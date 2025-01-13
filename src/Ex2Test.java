@@ -268,8 +268,15 @@ class Ex2Test {
         assertEquals("Hello", loadedSheet.get(0, 0).getData());
         assertEquals("42.0", loadedSheet.get(1, 1).getData());
     }
+    @Test
+    public void testIsIn() {
+        Ex2Sheet sheet = new Ex2Sheet(3, 3);
 
-
+        assertTrue(sheet.isIn(0, 0));
+        assertTrue(sheet.isIn(2, 2));
+        assertFalse(sheet.isIn(3, 3));
+        assertFalse(sheet.isIn(-1, -1));
+    }
 
 }
 
