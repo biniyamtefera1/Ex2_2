@@ -4,7 +4,7 @@ import java.io.*;
 public class Ex2Sheet implements Sheet {
     private Cell[][] cells;
 
-    /**
+    /***
  * Constructor for creating a sheet with dimensions {@code w} by {@code h}.
  * The constructor initializes a 2D array of cells, where each cell is initialized
   * with the default value defined in {@link Ex2Utils#EMPTY_CELL}.
