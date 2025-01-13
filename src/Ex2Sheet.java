@@ -436,7 +436,7 @@ public class Ex2Sheet implements Sheet {
             r.readLine();
             for (int i = 0; i < width(); i++) {
                 for (int j = 0; j < height(); j++) {
-                    cells[i][j] = new SCell(Ex2Utils.EMPTY_CELL);
+                     cells[i][j] = new SCell(Ex2Utils.EMPTY_CELL);
                 }
             }
             String line;
