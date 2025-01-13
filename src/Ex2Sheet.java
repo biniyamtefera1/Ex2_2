@@ -372,6 +372,15 @@ public class Ex2Sheet implements Sheet {
         }
         return d;
     }
+    /**
+     * Computes the depth of a given cell at position (x, y).
+     * The depth is defined as the number of steps required to evaluate the cell,
+     * where a cell with a number or text has a depth of 0, and a cell with a formula has a depth of 1.
+     *
+     * @param x the column index of the cell (0-based).
+     * @param y the row index of the cell (0-based).
+     * @return the depth of the cell: 0 for numbers and text, 1 for formulas, or an error constant for invalid cases.
+     */
 
     private int computeDepth(int x, int y) {
         Cell c = get(x, y);
@@ -382,6 +391,14 @@ public class Ex2Sheet implements Sheet {
         if (data.startsWith("=")) return 1;
         return Ex2Utils.ERR;
     }
+    /**
+     * Saves the current spreadsheet (the grid of cells) to a file.
+     * The file is saved in CSV format where each line contains the row, column,
+     * and the data of a non-empty cell. The first line of the file contains a header.
+     *
+     * @param fileName the name of the file to save the spreadsheet to.
+     * @throws IOException if there is an issue writing to the file.
+     */
 
     @Override
     public void save(String fileName) throws IOException {
@@ -401,6 +418,15 @@ public class Ex2Sheet implements Sheet {
             if (w != null) w.close();
         }
     }
+    /**
+     * Loads the spreadsheet data from a file.
+     * The file should be in CSV format where each line contains the row, column,
+     * and the data of a non-empty cell. The first line of the file is ignored as it is a header.
+     * The spreadsheet is populated based on the data from the file.
+     *
+     * @param fileName the name of the file to load the spreadsheet from.
+     * @throws IOException if there is an issue reading from the file.
+     */
 
     @Override
     public void load(String fileName) throws IOException {
