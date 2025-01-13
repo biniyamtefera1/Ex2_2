@@ -194,7 +194,7 @@ public class Ex2Sheet implements Sheet {
 
     private String evaluateFormula(String data, boolean[][] visited) {
         try {
-            String expr = data.substring(1);
+            String expr = data.substring(1).toUpperCase();
             String result = "";
             String token = "";
             for (int i = 0; i < expr.length(); i++) {

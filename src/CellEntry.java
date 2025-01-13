@@ -13,7 +13,7 @@ public class CellEntry implements Index2D {
 
     @Override
     public String toString() {
-        return Ex2Utils.ABC[x] + (y + 1);
+        return Ex2Utils.ABC[x] + y;
     }
 
     @Override
